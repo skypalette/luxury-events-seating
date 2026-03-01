@@ -3,10 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wedding Seating Charts | Sky Palette</title>
+    <title>Wedding Seating Chart</title>
+    <meta property="og:title" content="Wedding Seating Chart">
+    <meta property="og:description" content="Find your table assignment">
+    <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <!-- Set document title early from hash so the browser tab updates before paint -->
+    <script>
+    (function(){
+        var slug = location.hash.replace('#','').trim();
+        if (!slug) return;
+
+        // Derive a human-readable names string from the slug, e.g. "farheen-azeem" -> "Farheen & Azeem"
+        var parts = slug.split('-');
+        if (parts.length < 2) return;
+
+        var names = parts.map(function(part) {
+            return part.charAt(0).toUpperCase() + part.slice(1);
+        }).join(' & ');
+
+        document.title = 'Wedding Seating Chart | ' + names;
+    })();
+    </script>
     <style>
         :root {
             --gold: #b8860b;
@@ -754,7 +774,7 @@
         applyTheme(w.theme);
         buildLookup(w.tables);
 
-        document.title = `${w.name1} & ${w.name2} | Seating Chart`;
+        document.title = `Wedding Seating Chart | ${w.name1} & ${w.name2}`;
         document.getElementById('coupleNames').innerHTML =
             `${w.name1} <span class="ampersand">&</span> ${w.name2}`;
         document.getElementById('eventSubtitle').textContent = w.subtitle;
@@ -903,7 +923,7 @@
             // Admin view — show all weddings
             sessionStorage.setItem('sp_admin', '1');
             landing.classList.remove('hidden');
-            document.title = 'Wedding Seating Charts | Sky Palette';
+            document.title = 'Wedding Seating Chart | Sky Palette';
             applyTheme(null);
             renderLanding();
             window.scrollTo({ top: 0 });
@@ -915,13 +935,13 @@
         } else if (hash) {
             // Invalid hash — show not-found
             notFound.classList.add('active');
-            document.title = 'Event Not Found | Sky Palette';
+            document.title = 'Event Not Found';
             applyTheme(null);
             window.scrollTo({ top: 0 });
         } else {
             // No hash at all — show not-found
             notFound.classList.add('active');
-            document.title = 'Event Not Found | Sky Palette';
+            document.title = 'Event Not Found';
             applyTheme(null);
             window.scrollTo({ top: 0 });
         }
