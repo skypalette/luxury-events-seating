@@ -170,6 +170,40 @@
 
         .landing-footer a:hover { text-decoration: underline; }
 
+        /* ===================== NOT-FOUND PAGE ===================== */
+        .not-found-page {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .not-found-page.active { display: flex; }
+
+        .not-found-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .not-found-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: var(--charcoal);
+            margin-bottom: 10px;
+        }
+
+        .not-found-text {
+            font-size: 0.85rem;
+            color: var(--charcoal-light);
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
         /* ===================== SEATING CHART PAGE ===================== */
         .seating-page { display: none; }
         .seating-page.active { display: block; }
@@ -543,6 +577,13 @@
         <p class="landing-footer">Hosted by <a href="https://www.skypalettetech.com/" target="_blank" rel="noopener noreferrer">Sky Palette</a> in partnership with <a href="https://luxuryeventdesign.com/" target="_blank" rel="noopener noreferrer">Luxury Events</a></p>
     </div>
 
+    <!-- ==================== NOT-FOUND PAGE ==================== -->
+    <div class="not-found-page" id="notFoundPage">
+        <div class="not-found-icon">✦</div>
+        <h1 class="not-found-title">Event Not Found</h1>
+        <p class="not-found-text">This link doesn't match an active event. Please check the URL you received from your host.</p>
+    </div>
+
     <!-- ==================== SEATING CHART PAGE ==================== -->
     <a href="#" class="back-btn" id="backBtn">← All Events</a>
 
@@ -878,25 +919,46 @@
     }
 
     // ——— Routing ———
+    const ADMIN_KEY = 'admin';   // visit #admin to see the landing page
+
     function navigate() {
         const hash = location.hash.replace('#', '');
-        const landing = document.getElementById('landingPage');
-        const seating = document.getElementById('seatingPage');
-        const backBtn = document.getElementById('backBtn');
+        const landing  = document.getElementById('landingPage');
+        const seating  = document.getElementById('seatingPage');
+        const notFound = document.getElementById('notFoundPage');
+        const backBtn  = document.getElementById('backBtn');
 
-        if (hash && weddings[hash]) {
-            landing.classList.add('hidden');
-            seating.classList.add('active');
-            backBtn.classList.add('visible');
-            renderWedding(hash);
-            window.scrollTo({ top: 0 });
-        } else {
+        // Reset all views
+        landing.classList.add('hidden');
+        seating.classList.remove('active');
+        notFound.classList.remove('active');
+        backBtn.classList.remove('visible');
+
+        if (hash === ADMIN_KEY) {
+            // Admin view — show all weddings
+            sessionStorage.setItem('sp_admin', '1');
             landing.classList.remove('hidden');
-            seating.classList.remove('active');
-            backBtn.classList.remove('visible');
             document.title = 'Wedding Seating Charts | Sky Palette';
             applyTheme(null);
             renderLanding();
+        } else if (hash && weddings[hash]) {
+            // Guest view — show specific wedding only
+            seating.classList.add('active');
+            // Show back button only if we came from admin
+            if (sessionStorage.getItem('sp_admin') === '1') {
+                backBtn.classList.add('visible');
+                backBtn.href = '#' + ADMIN_KEY;
+            }
+            renderWedding(hash);
+            window.scrollTo({ top: 0 });
+        } else if (hash) {
+            // Invalid hash — show not-found
+            notFound.classList.add('active');
+            document.title = 'Event Not Found | Sky Palette';
+        } else {
+            // No hash at all — show not-found
+            notFound.classList.add('active');
+            document.title = 'Event Not Found | Sky Palette';
         }
     }
 
@@ -910,7 +972,6 @@
     });
     scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    renderLanding();
     navigate();
     </script>
 </body>
