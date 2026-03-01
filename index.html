@@ -13,12 +13,18 @@
     <!-- Set document title early from hash so the browser tab updates before paint -->
     <script>
     (function(){
-        var slug = location.hash.replace('#','');
-        var titles = {
-            'farheen-azeem': 'Wedding Seating Chart | Farheen & Azeem',
-            'palak-vaibhav': 'Wedding Seating Chart | Palak & Vaibhav'
-        };
-        if (titles[slug]) document.title = titles[slug];
+        var slug = location.hash.replace('#','').trim();
+        if (!slug) return;
+
+        // Derive a human-readable names string from the slug, e.g. "farheen-azeem" -> "Farheen & Azeem"
+        var parts = slug.split('-');
+        if (parts.length < 2) return;
+
+        var names = parts.map(function(part) {
+            return part.charAt(0).toUpperCase() + part.slice(1);
+        }).join(' & ');
+
+        document.title = 'Wedding Seating Chart | ' + names;
     })();
     </script>
     <style>
@@ -917,7 +923,7 @@
             // Admin view — show all weddings
             sessionStorage.setItem('sp_admin', '1');
             landing.classList.remove('hidden');
-            document.title = 'Wedding Seating Charts | Sky Palette';
+            document.title = 'Wedding Seating Chart | Sky Palette';
             applyTheme(null);
             renderLanding();
             window.scrollTo({ top: 0 });
